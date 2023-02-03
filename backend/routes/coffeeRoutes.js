@@ -2,12 +2,14 @@ const express = require('express');
 const router = express.Router();
 const { getCoffee, setCoffee, updateCoffee, deleteCoffee } = require('../controllers/coffeeController');
 
-router.get('/', getCoffee);
+const { protect } = require("../middleware/authMiddleware");
 
-router.post('/', setCoffee);
+router.get('/', protect, getCoffee);
 
-router.put('/:id', updateCoffee);
+router.post('/', protect, setCoffee);
 
-router.delete('/:id', deleteCoffee);
+router.put('/:id', protect, updateCoffee);
+
+router.delete('/:id', protect, deleteCoffee);
 
 module.exports = router; 

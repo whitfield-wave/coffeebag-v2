@@ -2,11 +2,11 @@ const asyncHandler = require('express-async-handler');
 const { globalAgent } = require('http');
 
 const Coffee = require('../models/coffeeModel');
+const User = require('../models/userModel');
 
 const getCoffee = asyncHandler(async (req, res) => {
-  const coffees = await Coffee.find();
+  const coffees = await Coffee.find({ user: req.user.id });
   res.status(200).json(coffees);
-
 });
 
 const setCoffee = asyncHandler(async (req, res) => {
@@ -18,6 +18,7 @@ const setCoffee = asyncHandler(async (req, res) => {
   const coffee = await Coffee.create({
     name: req.body.name,
     roaster: req.body.roaster,
+    user: req.user.id,
   })
 
   res.status(200).json(coffee);
@@ -30,6 +31,18 @@ const updateCoffee = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error('Coffee not found');
   }
+
+  const user = await User.findById(req.user.id);
+  // Check for user
+  if (!user) {
+    res.status(401)
+    throw new Error('User not found');
+  }
+  // Ensure logged in user matches coffee's user
+  if (coffee.user.toString() !== user.id) {
+    res.status(400);
+    throw new Error('Coffee not found');
+  }
   const updatedCoffee = await Coffee.findByIdAndUpdate(req.params.id, req.body, {
     new: true
   });
@@ -38,6 +51,18 @@ const updateCoffee = asyncHandler(async (req, res) => {
 const deleteCoffee = asyncHandler(async (req, res) => {
   const coffee = await Coffee.findById(req.params.id);
   if (!coffee) {
+    res.status(400);
+    throw new Error('Coffee not found');
+  }
+
+  const user = await User.findById(req.user.id);
+  // Check for user
+  if (!user) {
+    res.status(401)
+    throw new Error('User not found');
+  }
+  // Ensure logged in user matches coffee's user
+  if (coffee.user.toString() !== user.id) {
     res.status(400);
     throw new Error('Coffee not found');
   }
