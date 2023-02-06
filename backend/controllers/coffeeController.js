@@ -31,15 +31,13 @@ const updateCoffee = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error('Coffee not found');
   }
-
-  const user = await User.findById(req.user.id);
   // Check for user
-  if (!user) {
+  if (!req.user) {
     res.status(401)
     throw new Error('User not found');
   }
   // Ensure logged in user matches coffee's user
-  if (coffee.user.toString() !== user.id) {
+  if (coffee.user.toString() !== req.user.id) {
     res.status(400);
     throw new Error('Coffee not found');
   }
@@ -55,14 +53,13 @@ const deleteCoffee = asyncHandler(async (req, res) => {
     throw new Error('Coffee not found');
   }
 
-  const user = await User.findById(req.user.id);
   // Check for user
-  if (!user) {
+  if (!req.user) {
     res.status(401)
     throw new Error('User not found');
   }
   // Ensure logged in user matches coffee's user
-  if (coffee.user.toString() !== user.id) {
+  if (coffee.user.toString() !== req.user.id) {
     res.status(400);
     throw new Error('Coffee not found');
   }
