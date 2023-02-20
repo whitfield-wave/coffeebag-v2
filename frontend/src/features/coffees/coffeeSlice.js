@@ -24,11 +24,26 @@ export const createCoffee = createAsyncThunk('coffees/create', async (coffeeData
   }
 })
 
-// Get user goals
+// Get user coffees
 export const getCoffees = createAsyncThunk('coffees/getAll', async (_, thunkAPI) => {
   try {
     const token = thunkAPI.getState().auth.user.token;
     return await coffeeService.getCoffees(token);
+  } catch (error) {
+    const message = (error.response
+      && error.response.data
+      && error.response.data.message)
+      || error.message
+      || error.toString();
+    return thunkAPI.rejectWithValue(message);
+  }
+})
+
+// Delete coffee
+export const deleteCoffee = createAsyncThunk('coffees/delete', async (id, thunkAPI) => {
+  try {
+    const token = thunkAPI.getState().auth.user.token;
+    return await coffeeService.deleteCoffee(id, token);
   } catch (error) {
     const message = (error.response
       && error.response.data
@@ -69,6 +84,19 @@ export const coffeeSlice = createSlice({
         state.coffees = action.payload;
       })
       .addCase(getCoffees.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(deleteCoffee.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteCoffee.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.coffees = state.coffees.filter((coffee) => coffee._id !== action.payload.id);
+      })
+      .addCase(deleteCoffee.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

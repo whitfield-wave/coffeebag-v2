@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = '/api/coffees';
+const API_URL = '/api/coffees/';
 
 // Create new coffee
 const createCoffee = async (coffeeData, token) => {
@@ -21,7 +21,19 @@ const getCoffees = async (token) => {
       Authorization: `Bearer ${token}`
     }
   }
-  const response = await axios.post(API_URL, config);
+  const response = await axios.get(API_URL, config);
+
+  return response.data;
+}
+
+/// Delete user coffee
+const deleteCoffee = async (coffeeId, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }
+  const response = await axios.delete(API_URL + coffeeId, config);
 
   return response.data;
 }
@@ -29,6 +41,7 @@ const getCoffees = async (token) => {
 const goalService = {
   createCoffee,
   getCoffees,
+  deleteCoffee,
 
 }
 

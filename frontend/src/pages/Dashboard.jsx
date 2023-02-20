@@ -42,12 +42,12 @@ function Dashboard() {
       <section className="content">
         {coffees.length > 0 ?
           (<div className="coffees">
-            {coffeeService.map((coffee) => (<CoffeeItem key={coffee._id} coffee={coffee} />))}
+            {coffees.map((coffee) => (<CoffeeItem key={coffee._id} coffee={coffee} />))}
           </div>) :
           (<h3> You do not have any coffees.</h3>)}
       </section>
     </>
-  )
+  )  
 }
 
 export default Dashboard;
